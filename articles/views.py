@@ -3,6 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from .models import Article
 from .serializers import ArticleSerializer
+from rest_framework.filters import SearchFilter
+
 
 # Create your views here.
 
@@ -12,6 +14,8 @@ class ArticleListCreateView(generics.ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     pagination_class = None  # 페이지네이션 설정 가능
+    filter_backends = [SearchFilter]
+    search_fields = ['title']
 
     def get_permissions(self):
         if self.request.method == 'POST':
