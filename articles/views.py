@@ -20,10 +20,13 @@ class ArticleListCreateView(generics.ListCreateAPIView):
     search_fields = ['title', 'content']    # 단어가 포함된것 검색(like)
 
     def get_permissions(self):
+        # 메소드가 POST면 권한이 있는 user만 접근
         if self.request.method == 'POST':
             return [IsAuthenticated()]
+        # 메소드가 GET이면 누구나 접근
         return [permissions.AllowAny()]
 
+    # Article DB의 author 필드를 로그인된 user로 데이터 저장
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
