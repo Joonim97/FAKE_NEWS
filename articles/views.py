@@ -4,6 +4,7 @@ from rest_framework.exceptions import PermissionDenied
 from .models import Article
 from .serializers import ArticleSerializer
 from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 # Create your views here.
@@ -14,8 +15,9 @@ class ArticleListCreateView(generics.ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     pagination_class = None  # 페이지네이션 설정 가능
-    filter_backends = [SearchFilter]
-    search_fields = ['title']
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['author']  # 필터링 가능한 필드 추가(정확히 일치하는것 검색)
+    search_fields = ['title', 'content']    # 단어가 포함된것 검색(like)
 
     def get_permissions(self):
         if self.request.method == 'POST':
