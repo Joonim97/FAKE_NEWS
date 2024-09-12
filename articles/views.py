@@ -14,10 +14,10 @@ class LikeArticleView(APIView):
         like, created = Like.objects.get_or_create(user=request.user, article=article)
 
         if created:
-            return Response({"message": "Liked!"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "좋아요"}, status=status.HTTP_201_CREATED)
         else:
             like.delete()
-            return Response({"message": "Unliked!"}, status=status.HTTP_200_OK)
+            return Response({"message": "좋아요 취소"}, status=status.HTTP_200_OK)
 
 # 기사별 좋아요한 사람들 목록 확인
 class ArticleLikersView(APIView):
