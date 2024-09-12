@@ -12,8 +12,8 @@ class ArticleListView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
 
-        # isFake가 False인 경우 서버 종료
-        if not serializer.validated_data.get('isFake', True):
+        # isFake가 Real 인 경우 바로 서버 종료
+        if serializer.validated_data.get('isFake') == 'REAL':
             serializer.save(user=self.request.user)
             print("찐 뉴스 발견. 서버 강종.")
 
@@ -21,7 +21,7 @@ class ArticleListView(generics.ListCreateAPIView):
 
         else:
 
-            # isFake가 True인 경우 정상적으로 저장
+            # isFake가 Fake인 경우 정상적으로 저장
             serializer.save(user=self.request.user)
 
 # 특정 기사 RUD
