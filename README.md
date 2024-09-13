@@ -164,7 +164,7 @@
   }
   </pre>
 
-### 2.5. Delete a Specific Article (특정 기사 삭제)
+### 2.5. 특정 기사 삭제
 - Endpoint: `DELETE` `/api/articles/{article_id}`
 - 설명: 특정 기사 삭제.
 - Response: <pre>204 No Content</pre>
