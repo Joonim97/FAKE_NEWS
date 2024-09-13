@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     # Local
     'accounts',
     'articles',
-    'django_seed',
 ]
 
 MIDDLEWARE = [
@@ -113,8 +112,6 @@ SIMPLE_JWT = {
 }
 
 
-
-
 AUTH_USER_MODEL = "accounts.User"
 
 # Password validation
@@ -175,7 +172,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 
-#Media files
+# Media files
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
