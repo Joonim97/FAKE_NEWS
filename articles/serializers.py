@@ -23,3 +23,14 @@ class ArticleSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'content', 'isFake', 'image',
                   'user', 'comments', 'created_at', 'updated_at']
         read_only_fields = ['user', 'created_at', 'updated_at']
+
+    def update(self, instance, validated_data):
+        # 수정할 수 없는 필드
+        immutable_fields = ['isFake']
+
+        # 수정할 수 없는 필드에 대한 값 제거
+        for field in immutable_fields:
+            validated_data.pop(field, None)
+
+        # 기본 update 메서드 호출
+        return super().update(instance, validated_data)
