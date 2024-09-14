@@ -1,4 +1,5 @@
-import sys, os # 추후 accounts 추가 되고 마이그레이션 한 후 가동해봤을 때 서버 중단 작동하지 않으면 os.quit 로 교체하도록
+import sys
+import os  # 추후 accounts 추가 되고 마이그레이션 한 후 가동해봤을 때 서버 중단 작동하지 않으면 os.quit 로 교체하도록
 from .models import Article, Comment
 from .serializers import ArticleSerializer, CommentSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -20,17 +21,10 @@ class ArticleListCreateView(generics.ListCreateAPIView):
     serializer_class = ArticleSerializer
     pagination_class = None  # 페이지네이션 설정 가능
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['author']  # 필터링 가능한 필드 추가(정확히 일치하는것 검색)
+    filterset_fields = ['user']  # 필터링 가능한 필드 추가(정확히 일치하는것 검색)
     search_fields = ['title', 'content']    # 단어가 포함된것 검색(like)
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def get_permissions(self):
-        # 메소드가 POST면 권한이 있는 user만 접근
-        if self.request.method == 'POST':
-            return [IsAuthenticated()]
-        # 메소드가 GET이면 누구나 접근
-        return [permissions.AllowAny()]
-
-    # Article DB의 author 필드를 로그인된 user로 데이터 저장
     def perform_create(self, serializer):
 
         # isFake가 Real 인 경우 바로 서버 종료
@@ -50,16 +44,13 @@ class ArticleListCreateView(generics.ListCreateAPIView):
             serializer.save(user=self.request.user)
 
 # 특정 기사 RUD
+
+
 class ArticleDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    
-    def get_object(self):
-        article = super().get_object()
-        if article.author != self.request.user:
-            raise PermissionDenied("니꺼 아니야")
-        return article
+
 
 # 특정 기사에 댓글 CR
 class CommentListCreateView(generics.ListCreateAPIView):
@@ -72,10 +63,10 @@ class CommentListCreateView(generics.ListCreateAPIView):
         serializer.save(user=self.request.user, article=article)
 
 # 댓글 RUD
+
+
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     permission_classes = [IsAuthenticated]
-
-    
