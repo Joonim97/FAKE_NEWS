@@ -11,7 +11,7 @@ from .validators import validate_user_data
 from .serializers import UserSerializer, UserProfileSerializer
 
 # Create your views here.
-class UserCreateView(APIView):
+class UserCreateView(APIView):# send_verification_eamil
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -47,7 +47,7 @@ class UserLoginView(APIView):
         username = request.data.get("username")
         password = request.data.get("password")
 
-        print(request.data)
+
         user = authenticate(username=username, password=password)
         if not user:
             return Response(
