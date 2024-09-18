@@ -1,8 +1,6 @@
 from django.db import models
 from django.conf import settings
-
-
-# Create your models here.
+from accounts.models import User
 
 
 # 기사 모델
@@ -39,3 +37,44 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.text[:20]
+    
+    
+class Like(models.Model):
+    ARTICLE = 'article'
+    COMMENT = 'comment'
+    LIKE_CHOICES = [
+        (ARTICLE, 'Article'),
+        (COMMENT, 'Comment'),
+    ]
+    
+    content_type = models.CharField(max_length=10, choices=LIKE_CHOICES)
+    content_id = models.PositiveIntegerField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('content_type', 'content_id', 'user')
+        indexes = [
+            models.Index(fields=['content_type', 'content_id']),
+        ]
+
+    def __str__(self):
+        return f'{self.user} likes {self.content_type} {self.content_id}'
+    
+class Subscription(models.Model):
+    subscriber = models.ForeignKey(User, related_name='subscriptions', on_delete=models.CASCADE)
+    subscribed_to = models.ForeignKey(User, related_name='subscribers', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('subscriber', 'subscribed_to')
+
+    def __str__(self):
+        return f"{self.subscriber} subscribed to {self.subscribed_to}"
+    
+# class Like(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     article = models.ForeignKey(Article, on_delete=models.CASCADE)
+#     liked_at = models.DateTimeField(auto_now_add=True)
+
+#     class Meta:
+#         unique_together = ('user', 'article')

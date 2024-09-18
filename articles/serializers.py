@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Article, Comment
+from .models import Article, Comment, Like, Subscription
 
 # 댓글 관련 시리얼라이저
 
@@ -34,3 +34,32 @@ class ArticleSerializer(serializers.ModelSerializer):
 
         # 기본 update 메서드 호출
         return super().update(instance, validated_data)
+        
+        
+class LikeSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source='user.username', read_only=True)
+    
+    class Meta:
+        model = Like
+        fields = ['id', 'content_type', 'content_id', 'user']
+        read_only_fields = ['user']
+        
+class SubscriptionSerializer(serializers.ModelSerializer):
+    subscriber = serializers.CharField(source='subscriber.username', read_only=True)
+    subscribed_to = serializers.CharField(source='subscribed_to.username', read_only=True)
+
+    class Meta:
+        model = Subscription
+        fields = ['subscriber', 'subscribed_to', 'created_at']
+        read_only_fields = ['subscriber', 'subscribed_to', 'created_at']
+
+
+# class LikeSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Like
+#         fields = ['user', 'article', 'liked_at']
+
+# class ArticleSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Article
+#         fields = ['id', 'title', 'content']
