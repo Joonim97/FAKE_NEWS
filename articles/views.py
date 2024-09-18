@@ -72,12 +72,12 @@ class FakeNewsGenerator(generics.CreateAPIView):
             return Response({"error": "주제 미입력됨."}, status=400)
 
         # Ollama로 가짜 뉴스 생성
-        title, description = self.generator(topic).split("\n", 1)
+        title, content = self.generator(topic).split("\n", 1)
 
         # Article 데이터로 저장, 현재 사용자 할당
         article_data = {
             "title": title.strip(),
-            "description": description.strip(),
+            "content": content.strip(),
             "isFake": "FAKE",
         }
 
