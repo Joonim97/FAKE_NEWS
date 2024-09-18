@@ -21,8 +21,8 @@ urlpatterns = [
     path('articles/<int:article_pk>/likes/', LikeCreateView.as_view(), name='article-like-create'),
     path('comments/<int:comment_pk>/likes/', LikeCreateView.as_view(), name='comment-like-create'),
     path('likes/<str:content_type>/<int:content_id>/', DislikeView.as_view(), name='like-delete'),
-    path('<int:article_pk>/likes/articles/', LikeListView.as_view(), name='article-like-list'),
-    path('<int:comment_pk>/likes/comments/', LikeListView.as_view(), name='comment-like-list'),
+    path('<int:content_id>/likes/articles/', LikeListView.as_view(), name='article-like-list'),
+    path('<int:content_id>/likes/comments/', LikeListView.as_view(), name='comment-like-list'),
     path('articles/<int:article_pk>/subscribe/', SubscriptionCreateView.as_view(), name='subscribe-author'),
     
     

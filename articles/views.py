@@ -171,13 +171,18 @@ class LikeListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        content_type = self.kwargs.get('content_type')
         content_id = self.kwargs.get('content_id')
+        request_path = self.request.path
 
-        if content_type == 'article':
-            queryset = Like.objects.filter(content_type=Like.ARTICLE, content_id=content_id)
-        elif content_type == 'comment':
-            queryset = Like.objects.filter(content_type=Like.COMMENT, content_id=content_id)
+        if 'articles' in request_path:
+            content_type = Like.ARTICLE
+        elif 'comments' in request_path:
+            content_type = Like.COMMENT
+        else:
+            content_type = None
+
+        if content_type:
+            queryset = Like.objects.filter(content_type=content_type, content_id=content_id)
         else:
             queryset = Like.objects.none()
         
