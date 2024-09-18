@@ -72,7 +72,6 @@ class UserProfileView(APIView):
         serializer = UserProfileSerializer(user)
         return Response(serializer.data)
 
-
 class UserLogoutView(APIView):
 
 

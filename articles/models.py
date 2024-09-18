@@ -26,7 +26,6 @@ class Article(models.Model):
 
 # 댓글 모델
 
-
 class Comment(models.Model):
     article = models.ForeignKey(
         Article, related_name='comments', on_delete=models.CASCADE)  # 특정 기사에 종속 (기사 id 대입)
