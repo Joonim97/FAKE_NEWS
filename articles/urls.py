@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ArticleListCreateView, ArticleDetailView, CommentListCreateView, CommentDetailView, FakeNewsGenerator,  LikeCreateView, DislikeView, LikeListView, SubscriptionCreateView
+from .views import ArticleListCreateView, ArticleDetailView, CommentListCreateView, CommentDetailView, FakeNewsGenerator,  LikeView, SubscriptionView
 
 
 
@@ -18,12 +18,21 @@ urlpatterns = [
     path('<int:article_pk>/comments/<int:pk>/',
          CommentDetailView.as_view(), name='comment-detail'),  # 특정 댓글 RUD
     
-    path('articles/<int:article_pk>/likes/', LikeCreateView.as_view(), name='article-like-create'),
-    path('comments/<int:comment_pk>/likes/', LikeCreateView.as_view(), name='comment-like-create'),
-    path('likes/<str:content_type>/<int:content_id>/', DislikeView.as_view(), name='like-delete'),
-    path('<int:content_id>/likes/articles/', LikeListView.as_view(), name='article-like-list'),
-    path('<int:content_id>/likes/comments/', LikeListView.as_view(), name='comment-like-list'),
-    path('articles/<int:article_pk>/subscribe/', SubscriptionCreateView.as_view(), name='subscribe-author'),
+    # 기사/댓글 좋아요 GET / POST / DELETE
+    path('<int:content_id>/likes/<str:content_type>/', LikeView.as_view(), name='like'),
+    
+    # 구독 관련 경로 GET / POST
+    path('subscriptions/', SubscriptionView.as_view(), name='subscription-list'),
+    path('<int:article_pk>/subscribe/', SubscriptionView.as_view(), name='subscribe-author'),
+
+
+    
+    # path('<int:article_pk>/likes/articles/', LikeCreateView.as_view(), name='article-like-create'),
+    # path('<int:comment_pk>/likes/comments/', LikeCreateView.as_view(), name='comment-like-create'),
+    # path('likes/<str:content_type>/<int:content_id>/', DislikeView.as_view(), name='like-delete'),
+    # path('<int:content_id>/likes/articles/', LikeListView.as_view(), name='article-like-list'),
+    # path('<int:content_id>/likes/comments/', LikeListView.as_view(), name='comment-like-list'),
+    # path('<int:article_pk>/subscribe/', SubscriptionCreateView.as_view(), name='subscribe-author'),
     
     
     # path('<int:article_id>/like/', LikeArticleView.as_view(), name='like-article'),

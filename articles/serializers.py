@@ -52,14 +52,3 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         model = Subscription
         fields = ['subscriber', 'subscribed_to', 'created_at']
         read_only_fields = ['subscriber', 'subscribed_to', 'created_at']
-
-
-# class LikeSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Like
-#         fields = ['user', 'article', 'liked_at']
-
-# class ArticleSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Article
-#         fields = ['id', 'title', 'content']

@@ -1,6 +1,7 @@
 import sys, os, ollama # 추후 accounts 추가 되고 마이그레이션 한 후 가동해봤을 때 서버 중단 작동하지 않으면 os.quit 로 교체하도록
 from rest_framework import generics, status, serializers
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from .models import Article, Comment, Like, Subscription
 from .serializers import ArticleSerializer, CommentSerializer, LikeSerializer, SubscriptionSerializer
@@ -109,36 +110,48 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     
-    
-    
-class LikeCreateView(generics.CreateAPIView):
-    serializer_class = LikeSerializer
 
-    def perform_create(self, serializer):
+class LikeView(APIView):
+    serializer_class = LikeSerializer
+    
+    def get(self, request, content_type, content_id):
+        if content_type == Like.ARTICLE:
+            queryset = Like.objects.filter(content_type=Like.ARTICLE, content_id=content_id)
+        elif content_type == Like.COMMENT:
+            queryset = Like.objects.filter(content_type=Like.COMMENT, content_id=content_id)
+        else:
+            queryset = Like.objects.none()
+
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         content_type = serializer.validated_data['content_type']
         content_id = serializer.validated_data['content_id']
-        user = self.request.user
+        user = request.user
 
-        # Check if content exists
         if content_type == Like.ARTICLE:
             content = Article.objects.filter(id=content_id).exists()
         elif content_type == Like.COMMENT:
             content = Comment.objects.filter(id=content_id).exists()
         else:
             content = False
-        
+
         if not content:
             raise serializers.ValidationError("Content does not exist.")
 
-        # Save like
+        like, created = Like.objects.get_or_create(content_type=content_type, content_id=content_id, user=user)
+
+        if not created:
+            raise serializers.ValidationError("You have already liked this content.")
+        
         serializer.save(user=user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-class DislikeView(generics.DestroyAPIView):
-    queryset = Like.objects.all()
-
-    def delete(self, request, *args, **kwargs):
-        content_type = self.kwargs['content_type']
-        content_id = self.kwargs['content_id']
+    def delete(self, request, content_type, content_id):
         user = request.user
 
         try:
@@ -146,15 +159,26 @@ class DislikeView(generics.DestroyAPIView):
             like.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Like.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        
-class SubscriptionCreateView(generics.CreateAPIView):
+            return Response({"detail": "Like not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    
+class SubscriptionView(APIView):
     serializer_class = SubscriptionSerializer
     permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        # 구독 목록 조회
+        subscriptions = Subscription.objects.filter(subscriber=request.user)
+        serializer = self.serializer_class(subscriptions, many=True)
+        return Response(serializer.data)
 
-    def post(self, request, *args, **kwargs):
-        article = Article.objects.get(pk=self.kwargs['article_pk'])
+    def post(self, request, article_pk):
+        # 게시글 작성자 구독 처리
+        try:
+            article = Article.objects.get(pk=article_pk)
+        except Article.DoesNotExist:
+            return Response({"detail": "Article not found."}, status=status.HTTP_404_NOT_FOUND)
+
         subscribed_to = article.user
 
         # 이미 구독 중인지 확인
@@ -164,38 +188,95 @@ class SubscriptionCreateView(generics.CreateAPIView):
         # 구독 생성
         Subscription.objects.create(subscriber=request.user, subscribed_to=subscribed_to)
         return Response({"detail": "Subscription successful!"}, status=status.HTTP_201_CREATED)
-    
-# 좋아요 목록 조회
-class LikeListView(generics.ListAPIView):
-    serializer_class = LikeSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        content_id = self.kwargs.get('content_id')
-        request_path = self.request.path
-
-        if 'articles' in request_path:
-            content_type = Like.ARTICLE
-        elif 'comments' in request_path:
-            content_type = Like.COMMENT
-        else:
-            content_type = None
-
-        if content_type:
-            queryset = Like.objects.filter(content_type=content_type, content_id=content_id)
-        else:
-            queryset = Like.objects.none()
         
-        return queryset
+        
+        
+        
+# class LikeCreateView(generics.CreateAPIView):
+#     serializer_class = LikeSerializer
+
+#     def perform_create(self, serializer):
+#         content_type = serializer.validated_data['content_type']
+#         content_id = serializer.validated_data['content_id']
+#         user = self.request.user
+
+#         # Check if content exists
+#         if content_type == Like.ARTICLE:
+#             content = Article.objects.filter(id=content_id).exists()
+#         elif content_type == Like.COMMENT:
+#             content = Comment.objects.filter(id=content_id).exists()
+#         else:
+#             content = False
+        
+#         if not content:
+#             raise serializers.ValidationError("Content does not exist.")
+
+#         # Save like
+#         serializer.save(user=user)
+
+# class DislikeView(generics.DestroyAPIView):
+#     queryset = Like.objects.all()
+
+#     def delete(self, request, *args, **kwargs):
+#         content_type = self.kwargs['content_type']
+#         content_id = self.kwargs['content_id']
+#         user = request.user
+
+#         try:
+#             like = Like.objects.get(content_type=content_type, content_id=content_id, user=user)
+#             like.delete()
+#             return Response(status=status.HTTP_204_NO_CONTENT)
+#         except Like.DoesNotExist:
+#             return Response(status=status.HTTP_404_NOT_FOUND)
+
+  
+        
+# class SubscriptionCreateView(generics.CreateAPIView):
+#     serializer_class = SubscriptionSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request, *args, **kwargs):
+#         article = Article.objects.get(pk=self.kwargs['article_pk'])
+#         subscribed_to = article.user
+
+#         # 이미 구독 중인지 확인
+#         if Subscription.objects.filter(subscriber=request.user, subscribed_to=subscribed_to).exists():
+#             return Response({"detail": "You are already subscribed to this user."}, status=status.HTTP_400_BAD_REQUEST)
+
+#         # 구독 생성
+#         Subscription.objects.create(subscriber=request.user, subscribed_to=subscribed_to)
+#         return Response({"detail": "Subscription successful!"}, status=status.HTTP_201_CREATED)
     
-# 구독자 목록 조회
-class SubscriptionListView(generics.ListAPIView):
-    serializer_class = SubscriptionSerializer
-    permission_classes = [IsAuthenticated]
+# # 좋아요 목록 조회
+# class LikeListView(generics.ListAPIView):
+#     serializer_class = LikeSerializer
+#     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return Subscription.objects.filter(subscriber=self.request.user)
+#     def get_queryset(self):
+#         content_id = self.kwargs.get('content_id')
+#         request_path = self.request.path
 
+#         if 'articles' in request_path:
+#             content_type = Like.ARTICLE
+#         elif 'comments' in request_path:
+#             content_type = Like.COMMENT
+#         else:
+#             content_type = None
+
+#         if content_type:
+#             queryset = Like.objects.filter(content_type=content_type, content_id=content_id)
+#         else:
+#             queryset = Like.objects.none()
+        
+#         return queryset
+    
+# # 구독자 목록 조회
+# class SubscriptionListView(generics.ListAPIView):
+#     serializer_class = SubscriptionSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def get_queryset(self):
+#         return Subscription.objects.filter(subscriber=self.request.user)
 
 
 # # 좋아요 기능 구현
