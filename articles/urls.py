@@ -1,5 +1,7 @@
 from django.urls import path
-from .views import ArticleListCreateView, ArticleDetailView, CommentListCreateView, CommentDetailView, LikeCreateView, DislikeView, LikeListView, SubscriptionCreateView
+from .views import ArticleListCreateView, ArticleDetailView, CommentListCreateView, CommentDetailView, FakeNewsGenerator,  LikeCreateView, DislikeView, LikeListView, SubscriptionCreateView
+
+
 
 urlpatterns = [
     # 기사 관련 경로
@@ -7,6 +9,8 @@ urlpatterns = [
          name='article-list-create'),  # 기사 목록 조회 및 생성
     path('<int:pk>/', ArticleDetailView.as_view(),
          name='article-detail'),  # 특정 기사 RUD
+
+    path('autoGen/', FakeNewsGenerator.as_view(), name='fake-new-gen'), # 기사 자동 생성
 
     # 댓글 관련 경로
     path('<int:article_pk>/comments/', CommentListCreateView.as_view(),
@@ -25,4 +29,5 @@ urlpatterns = [
     # path('<int:article_id>/like/', LikeArticleView.as_view(), name='like-article'),
     # path('<int:article_id>/likers/', ArticleLikersView.as_view(), name='article-likers'),
     # path('users/<int:user_id>/liked-articles/', UserLikedArticlesView.as_view(), name='user-liked-articles'),
+
 ]
