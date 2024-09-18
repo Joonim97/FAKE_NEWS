@@ -11,7 +11,7 @@ from .validators import validate_user_data
 from .serializers import UserSerializer, UserProfileSerializer
 
 # Create your views here.
-class UserCreateView(APIView):
+class UserCreateView(APIView):# send_verification_eamil
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -47,7 +47,7 @@ class UserLoginView(APIView):
         username = request.data.get("username")
         password = request.data.get("password")
 
-        print(request.data)
+
         user = authenticate(username=username, password=password)
         if not user:
             return Response(
@@ -71,5 +71,35 @@ class UserProfileView(APIView):
         user = User.objects.get(username=username)
         serializer = UserProfileSerializer(user)
         return Response(serializer.data)
+
+
+
+class UserLogoutView(APIView):
+
+
+    def post(self, request, *args, **kwargs):
+        try:
+            # 사용자로부터 받은 토큰을 무효화합니다.
+            refresh_token = request.data.get('refresh_token')
+            print(refresh_token, request.data)
+            if not refresh_token:
+                return Response(
+                    {'detail': 'Refresh token is required.'}, 
+                    status=400
+                    )
+            
+            # RefreshToken 인스턴스를 생성하여 Blacklist에 추가합니다.
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(
+                {'detail': 'Logged out successfully.'}, 
+                status=400
+                )
+        except TokenError:
+            return Response(
+                {'detail': 'Token is invalid or expired.'}, 
+                status=400
+                )
+
 
 
