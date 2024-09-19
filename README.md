@@ -80,6 +80,23 @@
   }
   </pre>
 
+### 1.4. 로그아웃
+- Endpoint: `POST` `/api/accounts/logout`
+- 설명: 사용자 로그아웃 후 Access Token과 Refresh Token 삭제.
+- Request (JSON):
+  <pre>
+  {
+    "refresh": "eyJh...U4 (refresh token)"
+  }
+  </pre>
+
+- Response (JSON):
+  <pre>
+  {
+      "detail": "Logged out successfully."
+  }
+  </pre>
+
 ---
 
 ## 2. Articles CRUD
