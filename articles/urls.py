@@ -24,19 +24,4 @@ urlpatterns = [
     # 구독 관련 경로 GET / POST
     path('subscriptions/', SubscriptionView.as_view(), name='subscription-list'),
     path('<int:article_pk>/subscribe/', SubscriptionView.as_view(), name='subscribe-author'),
-
-
-    
-    # path('<int:article_pk>/likes/articles/', LikeCreateView.as_view(), name='article-like-create'),
-    # path('<int:comment_pk>/likes/comments/', LikeCreateView.as_view(), name='comment-like-create'),
-    # path('likes/<str:content_type>/<int:content_id>/', DislikeView.as_view(), name='like-delete'),
-    # path('<int:content_id>/likes/articles/', LikeListView.as_view(), name='article-like-list'),
-    # path('<int:content_id>/likes/comments/', LikeListView.as_view(), name='comment-like-list'),
-    # path('<int:article_pk>/subscribe/', SubscriptionCreateView.as_view(), name='subscribe-author'),
-    
-    
-    # path('<int:article_id>/like/', LikeArticleView.as_view(), name='like-article'),
-    # path('<int:article_id>/likers/', ArticleLikersView.as_view(), name='article-likers'),
-    # path('users/<int:user_id>/liked-articles/', UserLikedArticlesView.as_view(), name='user-liked-articles'),
-
 ]
