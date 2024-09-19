@@ -186,24 +186,6 @@
 - 설명: 특정 기사 삭제.
 - Response: <pre>204 No Content</pre>
 
-### 2.6. 특정 기사 조건 검색
-- Endpoint: `GET` `/api/articles`
-- 설명: 특정 기사 조건 검색.
-- 쿼리 파라미터:
-  - ?search=title: 제목 및 내용 검색
-  - ?user=1: 작성자 검색
-- Response (JSON):
-  <pre>
-  {
-    "id": 1,
-    "title": "가짜뉴스",
-    "content": "가짜뉴스내용",
-    "isFake": "FAKE",
-    "user": "RYU",
-    "comments": []
-  }
-  </pre>
-
 ---
 
 ## 3. Comments CRUD
@@ -299,6 +281,8 @@
 }
 </pre>
 
+---
+
 ## 5. LIKE
 
 ### 5.1. 특정 기사/댓글 좋아요 목록 조회
@@ -345,6 +329,7 @@
     204 No Content: 좋아요가 성공적으로 삭제됨.
     404 Not Found: 좋아요를 찾을 수 없다는 에러 메시지를 반환합니다.
 
+---
 
 ## 6. SUBSCRIPTION
 
@@ -384,3 +369,25 @@
 - 에러 메시지:
     "게시물을 찾을 수 없습니다." (기사를 찾을 수 없음.)
     "이미 구독 중입니다." (이미 구독 중임.)
+
+---
+
+## 7. Searching
+
+### 7.1. 특정 기사 조건 검색
+- Endpoint: `GET` `/api/articles`
+- 설명: 특정 기사 조건 검색.
+- 쿼리 파라미터:
+  - ?search=title: 제목 및 내용 검색
+  - ?user=1: 작성자 검색
+- Response (JSON):
+  <pre>
+  {
+    "id": 1,
+    "title": "가짜뉴스",
+    "content": "가짜뉴스내용",
+    "isFake": "FAKE",
+    "user": "RYU",
+    "comments": []
+  }
+  </pre>
