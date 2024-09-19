@@ -186,6 +186,24 @@
 - 설명: 특정 기사 삭제.
 - Response: <pre>204 No Content</pre>
 
+### 2.6. 특정 기사 조건 검색
+- Endpoint: `GET` `/api/articles`
+- 설명: 특정 기사 조건 검색.
+- 쿼리 파라미터:
+  - ?search=title: 제목 및 내용 검색
+  - ?user=1: 작성자 검색
+- Response (JSON):
+  <pre>
+  {
+    "id": 1,
+    "title": "가짜뉴스",
+    "content": "가짜뉴스내용",
+    "isFake": "FAKE",
+    "user": "RYU",
+    "comments": []
+  }
+  </pre>
+
 ---
 
 ## 3. Comments CRUD
