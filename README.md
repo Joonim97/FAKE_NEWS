@@ -264,3 +264,88 @@
 }
 </pre>
 
+## 5. LIKE
+
+### 5.1. 특정 기사/댓글 좋아요 목록 조회
+- Endpoint: `GET` `/api/articles/{content_id}/likes/{content_type}/`
+- 설명: 특정 콘텐츠에 대한 좋아요 목록을 조회합니다.
+
+- Response (JSON):
+    200 OK: 지정된 콘텐츠에 대한 좋아요 목록을 반환합니다. 응답에는 콘텐츠를 좋아요한 사용자 정보가 포함됩니다.
+<pre>
+[
+    {
+        "id": 1,
+        "content_type": "article",
+        "content_id": 1,
+        "user": "joonim"
+    }
+]
+</pre>
+
+### 5.2. 특정 기사/댓글 좋아요 생성
+- Endpoint: `POST` `/api/articles/{content_id}/likes/{content_type}/`
+- 설명: 특정 콘텐츠에 대한 좋아요를 생성합니다.
+  
+- Response (JSON):
+    201 Created: 생성된 좋아요의 세부 정보를 반환합니다.
+    400 Bad Request: 콘텐츠가 존재하지 않거나 이미 좋아요를 눌렀을 때 에러 메시지를 반환합니다.
+<pre>
+{
+    "id": 1,
+    "content_type": "article",
+    "content_id": 1,
+    "user": "joonim"
+}
+</pre>
+- 에러 메시지:
+    "컨텐츠가 존재하지 않습니다." (컨텐츠가 존재하지 않음.)
+    "이미 좋아요를 눌렀습니다." (이미 좋아요를 눌렀음.)
+
+### 5.3. 특정 기사/댓글 좋아요 취소
+- Endpoint: `DELETE` `/api/articles/{content_id}/likes/{content_type}/`
+- 설명: 특정 콘텐츠에 대한 좋아요를 삭제합니다.
+  
+- Response (JSON):
+    204 No Content: 좋아요가 성공적으로 삭제됨.
+    404 Not Found: 좋아요를 찾을 수 없다는 에러 메시지를 반환합니다.
+
+
+## 6. SUBSCRIPTION
+
+### 6.1. 사용자의 구독 목록 조회
+- Endpoint: `GET` `/api/articles/subscriptions/`
+- 설명: 인증된 사용자의 구독 목록을 조회합니다.
+
+- Response (JSON):
+    200 OK: 인증된 사용자가 구독 중인 목록과 세부 정보를 반환합니다.
+<pre>
+[
+    {
+        "subscriber": "joonim3",
+        "subscribed_to": "joonim",
+        "created_at": "2024-09-19T01:56:28.848940Z"
+    },
+    {
+        "subscriber": "joonim3",
+        "subscribed_to": "joonim2",
+        "created_at": "2024-09-19T01:57:51.782894Z"
+    }
+]
+</pre>
+
+### 6.2. 특정 기사의 작성자를 구독
+- Endpoint: `GET` `/api/articles/{article_id}/subscribe/`
+- 설명: 특정 기사의 작성자를 구독합니다.
+  
+- Response (JSON):
+    201 Created: 구독이 성공적으로 생성되었음을 나타내는 성공 메시지를 반환합니다.
+    400 Bad Request: 이미 구독 중이거나 기사를 찾을 수 없을 때 에러 메시지를 반환합니다.
+<pre>
+{
+    "detail": "구독 성공!"
+}
+</pre>
+- 에러 메시지:
+    "게시물을 찾을 수 없습니다." (기사를 찾을 수 없음.)
+    "이미 구독 중입니다." (이미 구독 중임.)
