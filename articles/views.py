@@ -3,7 +3,7 @@ from rest_framework import generics, status, serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from .models import Article, Comment, Like, Subscription
+from .models import Article, Comment, Like, Subscription_test
 from .serializers import ArticleSerializer, CommentSerializer, LikeSerializer, SubscriptionSerializer
 
 # 기사 목록 CR
@@ -125,31 +125,60 @@ class LikeView(APIView):
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
     
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
+    def post(self, request, content_type, content_id):
+        data = request.data.copy()
+        data['content_type'] = content_type  # URL에서 받은 content_type 추가
+        data['content_id'] = content_id      # URL에서 받은 content_id 추가
+        
+        serializer = self.serializer_class(data=data)
         serializer.is_valid(raise_exception=True)
 
-        content_type = serializer.validated_data['content_type']
-        content_id = serializer.validated_data['content_id']
         user = request.user
 
         if content_type == Like.ARTICLE:
-            content = Article.objects.filter(id=content_id).exists()
+            content_exists = Article.objects.filter(id=content_id).exists()
         elif content_type == Like.COMMENT:
-            content = Comment.objects.filter(id=content_id).exists()
+            content_exists = Comment.objects.filter(id=content_id).exists()
         else:
-            content = False
+            content_exists = False
 
-        if not content:
-            raise serializers.ValidationError("Content does not exist.")
+        if not content_exists:
+            raise serializers.ValidationError("컨텐츠가 존재하지 않습니다.")
 
-        like, created = Like.objects.get_or_create(content_type=content_type, content_id=content_id, user=user)
+        # 이미 좋아요를 눌렀는지 확인
+        if Like.objects.filter(content_type=content_type, content_id=content_id, user=user).exists():
+            raise serializers.ValidationError("이미 좋아요를 눌렀습니다.")
 
-        if not created:
-            raise serializers.ValidationError("You have already liked this content.")
+        # 중복이 없을 때만 생성
+        like = Like.objects.create(content_type=content_type, content_id=content_id, user=user)
         
-        serializer.save(user=user)
+        serializer = self.serializer_class(like)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+        # serializer = self.serializer_class(data=request.data)
+        # serializer.is_valid(raise_exception=True)
+
+        # content_type = serializer.validated_data['content_type']
+        # content_id = serializer.validated_data['content_id']
+        # user = request.user
+
+        # if content_type == Like.ARTICLE:
+        #     content = Article.objects.filter(id=content_id).exists()
+        # elif content_type == Like.COMMENT:
+        #     content = Comment.objects.filter(id=content_id).exists()
+        # else:
+        #     content = False
+
+        # if not content:
+        #     raise serializers.ValidationError("Content does not exist.")
+
+        # like, created = Like.objects.get_or_create(content_type=content_type, content_id=content_id, user=user)
+
+        # if not created:
+        #     raise serializers.ValidationError("You have already liked this content.")
+        
+        # serializer.save(user=user)
+        # return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, content_type, content_id):
         user = request.user
@@ -168,7 +197,7 @@ class SubscriptionView(APIView):
     
     def get(self, request):
         # 구독 목록 조회
-        subscriptions = Subscription.objects.filter(subscriber=request.user)
+        subscriptions = Subscription_test.objects.filter(subscriber=request.user)
         serializer = self.serializer_class(subscriptions, many=True)
         return Response(serializer.data)
 
@@ -177,17 +206,17 @@ class SubscriptionView(APIView):
         try:
             article = Article.objects.get(pk=article_pk)
         except Article.DoesNotExist:
-            return Response({"detail": "Article not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "게시물을 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
         subscribed_to = article.user
 
         # 이미 구독 중인지 확인
-        if Subscription.objects.filter(subscriber=request.user, subscribed_to=subscribed_to).exists():
-            return Response({"detail": "You are already subscribed to this user."}, status=status.HTTP_400_BAD_REQUEST)
+        if Subscription_test.objects.filter(subscriber=request.user, subscribed_to=subscribed_to).exists():
+            return Response({"detail": "이미 구독 중입니다."}, status=status.HTTP_400_BAD_REQUEST)
 
         # 구독 생성
-        Subscription.objects.create(subscriber=request.user, subscribed_to=subscribed_to)
-        return Response({"detail": "Subscription successful!"}, status=status.HTTP_201_CREATED)
+        Subscription_test.objects.create(subscriber=request.user, subscribed_to=subscribed_to)
+        return Response({"detail": "구독 성공!"}, status=status.HTTP_201_CREATED)
         
         
         

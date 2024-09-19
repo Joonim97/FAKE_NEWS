@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Article, Comment, Like, Subscription
+from .models import Article, Comment, Like, Subscription_test
 
 # 댓글 관련 시리얼라이저
 
@@ -49,6 +49,6 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     subscribed_to = serializers.CharField(source='subscribed_to.username', read_only=True)
 
     class Meta:
-        model = Subscription
+        model = Subscription_test
         fields = ['subscriber', 'subscribed_to', 'created_at']
         read_only_fields = ['subscriber', 'subscribed_to', 'created_at']

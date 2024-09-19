@@ -59,7 +59,8 @@ class Like(models.Model):
     def __str__(self):
         return f'{self.user} likes {self.content_type} {self.content_id}'
     
-class Subscription(models.Model):
+
+class Subscription_test(models.Model):
     subscriber = models.ForeignKey(User, related_name='subscriptions', on_delete=models.CASCADE)
     subscribed_to = models.ForeignKey(User, related_name='subscribers', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -69,11 +70,3 @@ class Subscription(models.Model):
 
     def __str__(self):
         return f"{self.subscriber} subscribed to {self.subscribed_to}"
-    
-# class Like(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     article = models.ForeignKey(Article, on_delete=models.CASCADE)
-#     liked_at = models.DateTimeField(auto_now_add=True)
-
-#     class Meta:
-#         unique_together = ('user', 'article')
