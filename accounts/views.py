@@ -78,7 +78,7 @@ class UserLogoutView(APIView):
     def post(self, request, *args, **kwargs):
         try:
             # 사용자로부터 받은 토큰을 무효화합니다.
-            refresh_token = request.data.get('refresh_token')
+            refresh_token = request.data.get('refresh')
             print(refresh_token, request.data)
             if not refresh_token:
                 return Response(
