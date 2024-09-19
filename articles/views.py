@@ -75,7 +75,7 @@ class FakeNewsGenerator(generics.CreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def generator(self, topic):
-        prompt = f"{topic} 라는 주제에 맞는 가짜 뉴스의 제목과 기사를 작성해달라. 제목과 기사 사이에는 문단 나눔이 되어있어야한다. 뉴스의 내용은 허황되며, 음모론으로 가득차야한다. 또한 그 거짓정보가 진실인것마냥 확신에 찬 어조를 채택해야한다. 텍스트는 최대 200자로 제한한다."
+        prompt = f"{topic} 라는 주제에 맞는 가짜 뉴스의 제목과 기사를 작성해달라. 제목과 기사 외의 내용은 절대 Response 에 담아서는 안된다. 제목과 기사 사이에는 문단 나눔이 되어있어야한다. 뉴스의 내용은 허황되며, 음모론으로 가득차야한다. 또한 그 거짓정보가 진실인것마냥 확신에 찬 어조를 채택해야한다. 텍스트는 최대 200자로 제한한다. 존댓말은 쓰지마라."
         response = ollama.chat(
             model='llama3.1',
             messages=[{'role': 'user', 'content': prompt}]

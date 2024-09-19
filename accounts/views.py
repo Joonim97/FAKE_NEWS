@@ -91,7 +91,7 @@ class UserLogoutView(APIView):
             token.blacklist()
             return Response(
                 {'detail': 'Logged out successfully.'}, 
-                status=400
+                status=200
                 )
         except TokenError:
             return Response(

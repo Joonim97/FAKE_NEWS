@@ -32,7 +32,7 @@ class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True) 
 
     def __str__(self):
         return self.text[:20]
@@ -63,10 +63,11 @@ class Like(models.Model):
 class Subscription_test(models.Model):
     subscriber = models.ForeignKey(User, related_name='subscriptions', on_delete=models.CASCADE)
     subscribed_to = models.ForeignKey(User, related_name='subscribers', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now=True) ## 마이그레이션하게 잠시 변경, auto_now_add 로 복구 예정
 
     class Meta:
         unique_together = ('subscriber', 'subscribed_to')
 
     def __str__(self):
         return f"{self.subscriber} subscribed to {self.subscribed_to}"
+    
