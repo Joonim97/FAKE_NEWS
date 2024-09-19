@@ -335,7 +335,7 @@
 </pre>
 
 ### 6.2. 특정 기사의 작성자를 구독
-- Endpoint: `GET` `/api/articles/{article_id}/subscribe/`
+- Endpoint: `POST` `/api/articles/{article_id}/subscribe/`
 - 설명: 특정 기사의 작성자를 구독합니다.
   
 - Response (JSON):
