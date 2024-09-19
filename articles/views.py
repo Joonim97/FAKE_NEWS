@@ -52,6 +52,21 @@ class ArticleDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ArticleSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def perform_update(self, serializer):
+        # isFake가 Real 인 경우 바로 서버 종료
+        if serializer.validated_data.get('isFake') == 'REAL':
+            print("\033[91m\033[1m" + """
++-------------------------------------------------------+
+|     !!! 진짜 뉴스 발견 !!!                            |
+|     !!! 서버 셧다운 !!!                               |
+|     FAKE NEWS 에서는 오직 가짜 뉴스만을 허용합니다.   |
++-------------------------------------------------------+
+\033[0m""")
+            os._exit(1)  # 서버 강종
+        else:
+            # isFake가 Fake인 경우 정상적으로 저장
+            serializer.save()
+
 
 # 가짜뉴스 생성기
 class FakeNewsGenerator(generics.CreateAPIView):
