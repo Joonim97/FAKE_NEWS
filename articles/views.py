@@ -43,6 +43,7 @@ class ArticleListCreateView(generics.ListCreateAPIView):
             # isFake가 Fake인 경우 정상적으로 저장
             serializer.save(user=self.request.user)
 
+
 # 특정 기사 RUD
 
 
@@ -93,14 +94,20 @@ class FakeNewsGenerator(generics.CreateAPIView):
 
 
 # 특정 기사에 댓글 CR
+
+
 class CommentListCreateView(generics.ListCreateAPIView):
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def get_queryset(self):
+        article_id = self.kwargs['article_pk']
+        return Comment.objects.filter(article_id=article_id)
+    
     def perform_create(self, serializer):
         article = Article.objects.get(pk=self.kwargs['article_pk'])
         serializer.save(user=self.request.user, article=article)
+
 
 # 댓글 RUD
 
