@@ -52,7 +52,7 @@ def get_secret(setting, secrets=secrets):  # 예외 처리를 통해 오류 발�
 SECRET_KEY = get_secret("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in Articleion!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
 "3.36.49.131",
