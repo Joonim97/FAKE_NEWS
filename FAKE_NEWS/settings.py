@@ -54,7 +54,11 @@ SECRET_KEY = get_secret("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in Articleion!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+"3.36.49.131",
+"localhost",
+"127.0.0.1",
+]
 
 
 # Application definition
